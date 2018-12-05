@@ -146,7 +146,7 @@ $(function() {
                 element: 'morris_gross',
 
                 data: [
-                    { value: 85, label: 'Confirmado Hoje' },
+                    { value: 94, label: 'Confirmado Hoje' },
                     { value: 15, label: 'Não confirmado' }
                    
                 ],

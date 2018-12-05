@@ -9,7 +9,7 @@
                             type: 'line',
 
                             data: {
-                                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', '<?php echo 'Dia da semana (extenso): ', $diasExtenso[$date->format('w')], PHP_EOL; ?>'],
+                                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                                 datasets: [{
                                     label: 'Almonds',
                                     data: [12, 19, 3, 17, 6, 3, 7],
