@@ -15,12 +15,21 @@ $contato->getContato();
 date_default_timezone_set('America/Sao_Paulo');
 $hoje = date('d/m/Y');
 $amanha = date ('d/m/Y', mktime(0, 0, 0, date("m"), date("d")+1, date("Y")));
+$hojeMenos1 = date('d/m/Y', strtotime('-1 days', strtotime($hoje)));
+
 
 $dataEnviada = '01/05/2013 17:30';
 
 $diasExtenso = array("Domindo","segunda","Terça","Quarta","Quinta","Sexta","Sábado");
 $date = DateTime::createFromFormat('d/m/Y', $hoje);
+$dateMenos1 = DateTime::createFromFormat('d/m/Y', $amanha);
 $feriados = array('01/01','31/12','25/12','01/05','25/04');
+$semanaHoje = date('w', strtotime($date));
+$semanaHojeMenos1 = date('w', strtotime($dateMenos1));
+
+$Hoje0 = $diasExtenso[$semanaHoje];
+$Hoje1 = $diasExtenso[$semanaHojeMenos1];
+
 
 //contagem e soma não confirmados
 $result0 = mysqli_query($conn, "SELECT count(servico_id) AS contagem FROM servico where servico_status = 0");
@@ -115,7 +124,7 @@ $valoratendidoAmanha = $rowsomaAmanha['valor'];
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="page-header">
-                                <h2 class="pageheader-title">E-commerce Dashboard Template <?= stripslashes($semana) ?></h2>
+                                <h2 class="pageheader-title">E-commerce Dashboard Template <?php echo $diasExtenso[$date->format('w')], PHP_EOL; ?></h2>
                                 <p class="pageheader-text">
 								
 								</p>
@@ -205,12 +214,13 @@ $valoratendidoAmanha = $rowsomaAmanha['valor'];
                             </div>
                         </div>
                     <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 col-12">
-                        <div class="card">
-                            <h5 class="card-header">Line Charts</h5>
-                            <div class="card-body">
-                                <canvas id="chartjs_line"></canvas>
+                            <div class="card">
+                                <h5 class="card-header">AP and AR Balance
+                                </h5>
+                                <div class="card-body">
+                                    <canvas id="chartjs_balance_bar"></canvas>
+                                </div>
                             </div>
-                        </div>
                     </div>
                     <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-12">
                     <div class="card">
@@ -677,283 +687,67 @@ $valoratendidoAmanha = $rowsomaAmanha['valor'];
     });
 	</script>
 	<script>
-                    var ctx = document.getElementById('chartjs_line').getContext('2d');
+    var ctx = document.getElementById("chartjs_balance_bar").getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
 
-                    var myChart = new Chart(ctx, {
-                            type: 'line',
+        
+        data: {
+            labels: ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "<?= stripslashes($Hoje1) ?>", "<?= stripslashes($Hoje0) ?>(Hoje)"],
+            datasets: [{
+                label: 'Aged Payables',
+                data: [500, 1000, 1500, 3700, 2500, 4000, 3000],
+                backgroundColor: "rgba(89, 105, 255,.8)",
+                borderColor: "rgba(89, 105, 255,1)",
+                borderWidth:2
 
-                            data: {
-                                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', '<?php echo 'Dia da semana (extenso): ', $diasExtenso[$date->format('w')], PHP_EOL; ?>'],
-                                datasets: [{
-                                    label: 'Almonds',
-                                    data: [12, 19, 3, 17, 6, 3, 7],
-
-                                    backgroundColor: "rgba(89, 105, 255,0.5)",
-                                    borderColor: "rgba(89, 105, 255,0.7)",
-                                    borderWidth: 2
-                                }, {
-                                    label: 'Cashew',
-                                    data: [2, 29, 5, 5, 2, 3, 10],
-                                    backgroundColor: "rgba(255, 64, 123,0.5)",
-                                    borderColor: "rgba(255, 64, 123,0.7)",
-                                    borderWidth: 2
-                                }]
-
-                            },
-                            options: {
-                                legend: {
-                                    display: true,
-                                    position: 'bottom',
-
-                                    labels: {
-                                        fontColor: '#71748d',
-                                        fontFamily: 'Circular Std Book',
-                                        fontSize: 14,
-                                    }
-                                },
-
-                                scales: {
-                                    xAxes: [{
-                                        ticks: {
-                                            fontSize: 14,
-                                            fontFamily: 'Circular Std Book',
-                                            fontColor: '#71748d',
-                                        }
-                                    }],
-                                    yAxes: [{
-                                        ticks: {
-                                            fontSize: 14,
-                                            fontFamily: 'Circular Std Book',
-                                            fontColor: '#71748d',
-                                        }
-                                    }]
-                                }
-                            }
-                        
+            }, {
+                label: 'Aged Receiables',
+                data: [1000, 1500, 2500, 3500, 2500, 4000, 3000],
+                backgroundColor: "rgba(255, 64, 123,.8)",
+                borderColor: "rgba(255, 64, 123,1)",
+                borderWidth:2
 
 
-                    });
-            </script>
-			<script>
+            }]
 
+        },
+        options: {
+            legend: {
+                    display: true,
 
-            if ($('#chartjs_bar').length) {
-                var ctx = document.getElementById("chartjs_bar").getContext('2d');
-                var myChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ["M", "T", "W", "R", "F", "S", "S"],
-                        datasets: [{
-                            label: 'Almonds',
-                            data: [12, 19, 3, 17, 28, 24, 7],
-                           backgroundColor: "rgba(89, 105, 255,0.5)",
-                                    borderColor: "rgba(89, 105, 255,0.7)",
-                            borderWidth: 2
-                        }, {
-                            label: 'Cashew',
-                            data: [30, 29, 5, 5, 20, 3, 10],
-                           backgroundColor: "rgba(255, 64, 123,0.5)",
-                                    borderColor: "rgba(255, 64, 123,0.7)",
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
+                    position: 'bottom',
 
-                            }]
-                        },
-                             legend: {
-                        display: true,
-                        position: 'bottom',
-
-                        labels: {
-                            fontColor: '#71748d',
-                            fontFamily: 'Circular Std Book',
-                            fontSize: 14,
-                        }
-                    },
-
-                    scales: {
-                        xAxes: [{
-                            ticks: {
-                                fontSize: 14,
-                                fontFamily: 'Circular Std Book',
-                                fontColor: '#71748d',
-                            }
-                        }],
-                        yAxes: [{
-                            ticks: {
-                                fontSize: 14,
-                                fontFamily: 'Circular Std Book',
-                                fontColor: '#71748d',
-                            }
-                        }]
+                    labels: {
+                        fontColor: '#71748d',
+                        fontFamily:'Circular Std Book',
+                        fontSize: 14,
                     }
+            },
+
+                scales: {
+                    xAxes: [{
+                ticks: {
+                    fontSize: 14,
+                     fontFamily:'Circular Std Book',
+                     fontColor: '#71748d',
                 }
-
-                    
-                });
-            }
-
-            if ($('#chartjs_radar').length) {
-                var ctx = document.getElementById("chartjs_radar");
-                var myChart = new Chart(ctx, {
-                    type: 'radar',
-                    data: {
-                        labels: ["M", "T", "W", "T", "F", "S", "S"],
-                        datasets: [{
-                            label: 'Almonds',
-                           backgroundColor: "rgba(89, 105, 255,0.5)",
-                                    borderColor: "rgba(89, 105, 255,0.7)",
-                            data: [12, 19, 3, 17, 28, 24, 7],
-                            borderWidth: 2
-                        }, {
-                            label: 'Cashew',
-                             backgroundColor: "rgba(255, 64, 123,0.5)",
-                                    borderColor: "rgba(255, 64, 123,0.7)",
-                            data: [30, 29, 5, 5, 20, 3, 10],
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                       
-                             legend: {
-                        display: true,
-                        position: 'bottom',
-
-                        labels: {
-                            fontColor: '#71748d',
-                            fontFamily: 'Circular Std Book',
-                            fontSize: 14,
-                        }
-                    },
-
-                    
+            }],
+            yAxes: [{
+                ticks: {
+                    fontSize: 14,
+                     fontFamily:'Circular Std Book',
+                     fontColor: '#71748d',
                 }
-
-                });
-            }
-
-
-            if ($('#chartjs_polar').length) {
-                var ctx = document.getElementById("chartjs_polar").getContext('2d');
-                var myChart = new Chart(ctx, {
-                    type: 'polarArea',
-                    data: {
-                        labels: ["M", "T", "W", "T", "F", "S", "S"],
-                        datasets: [{
-                            backgroundColor: [
-                                "#5969ff",
-                                "#ff407b",
-                                "#25d5f2",
-                                "#ffc750",
-                                "#2ec551",
-                                "#7040fa",
-                                "#ff004e"
-                            ],
-                            data: [12, 19, 3, 17, 28, 24, 7]
-                        }]
-                    },
-                    options: {
-                        
-                             legend: {
-                        display: true,
-                        position: 'bottom',
-
-                        labels: {
-                            fontColor: '#71748d',
-                            fontFamily: 'Circular Std Book',
-                            fontSize: 14,
-                        }
-                    },
-
-                    
+            }]
                 }
-                });
-            }
+    }
 
 
-            if ($('#chartjs_pie').length) {
-                var ctx = document.getElementById("chartjs_pie").getContext('2d');
-                var myChart = new Chart(ctx, {
-                    type: 'pie',
-                    data: {
-                        labels: ["M", "T", "W", "T", "F", "S", "S"],
-                        datasets: [{
-                            backgroundColor: [
-                               "#5969ff",
-                                "#ff407b",
-                                "#25d5f2",
-                                "#ffc750",
-                                "#2ec551",
-                                "#7040fa",
-                                "#ff004e"
-                            ],
-                            data: [12, 19, 3, 17, 28, 24, 7]
-                        }]
-                    },
-                    options: {
-                           legend: {
-                        display: true,
-                        position: 'bottom',
 
-                        labels: {
-                            fontColor: '#71748d',
-                            fontFamily: 'Circular Std Book',
-                            fontSize: 14,
-                        }
-                    },
+});	
+	</script>
 
-                    
-                }
-                });
-            }
-
-
-            if ($('#chartjs_doughnut').length) {
-                var ctx = document.getElementById("chartjs_doughnut").getContext('2d');
-                var myChart = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ["M", "T", "W", "T", "F", "S", "S"],
-                        datasets: [{
-                            backgroundColor: [
-                                 "#5969ff",
-                                "#ff407b",
-                                "#25d5f2",
-                                "#ffc750",
-                                "#2ec551",
-                                "#7040fa",
-                                "#ff004e"
-                            ],
-                            data: [12, 19, 3, 17, 28, 24, 7]
-                        }]
-                    },
-                    options: {
-
-                             legend: {
-                        display: true,
-                        position: 'bottom',
-
-                        labels: {
-                            fontColor: '#71748d',
-                            fontFamily: 'Circular Std Book',
-                            fontSize: 14,
-                        }
-                    },
-
-                    
-                }
-
-                });
-            }
-
-
-        });
-
-})(window, document, window.jQuery);
-    </script>
 </body>
  
 </html>
